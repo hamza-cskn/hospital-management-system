@@ -1,0 +1,146 @@
+<script src="js/core.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<script>
+    checkIfUserIs('admin').then(isAdmin => {
+        if (!isAdmin) {
+            redirectTo('/profile');
+        }
+    });
+</script>
+
+<title> Welcome </title>
+<nav class="bg-white border-gray-200 dark:bg-gray-900">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+            <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                <li>
+                    <a id="dashboard-item"
+                       class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Dashboard</a>
+                </li>
+                <li>
+                    <a href="/profile"
+                       class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Profile</a>
+                </li>
+                <li>
+                    <a href="/"
+                       class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Home</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<h2 id="header-title">edit appointment</h2>
+<form id="appointment-form">
+    <label>Department</label>
+    <br>
+    <span id="departmentname-area"> <!-- will be filled by scripts ---></span>
+    <br>
+    <label>Doctor</label>
+    <br>
+    <span id="doctorname-area"> <!-- will be filled by scripts ---></span>
+    <span id="worktime-area"> <!-- will be filled by scripts ---></span>
+    <br>
+    <label>Patient</label>
+    <br>
+    <span id="patientname-area"> <!-- will be filled by scripts ---></span>
+
+    <h3>Start Time</h3>
+    <label for="startdate">Date</label>
+    <input type="date" id="startdate" name="date">
+    <br>
+    <label for="starttime">Time</label>
+    <input type="time" id="starttime" name="time">
+    <br>
+    <h3>End Time</h3>
+    <label for="enddate">Date</label>
+    <input type="date" id="enddate" name="date">
+    <br>
+    <label for="endtime">Time</label>
+    <input type="time" id="endtime" name="time">
+    <br>
+    <button type="submit">save appointment</button>
+</form>
+
+<script>
+
+    (async () => {
+        const user = await getUserProfile();
+        switch (user.role) {
+            case 'patient':
+                document.getElementById('dashboard-item').href = '/patient-dashboard';
+                break;
+            case 'doctor':
+                document.getElementById('dashboard-item').href = '/doctor-dashboard';
+                break;
+            case 'admin':
+                document.getElementById('dashboard-item').href = '/admin-dashboard';
+                break;
+            default:
+                document.getElementById('dashboard-item').href = '/profile';
+        }
+    })();
+    function showNotFound() {
+        // hide the form
+        document.getElementById('appointment-form').style.display = 'none';
+        document.getElementById("header-title").innerText = "appointment not found";
+    }
+
+    async function updateFormDatas(appointment) {
+        const startTime = new Date(appointment.startTime);
+        document.getElementById('startdate').value = startTime.toISOString().split('T')[0];
+        document.getElementById('starttime').value = startTime.toTimeString().split(' ')[0];
+
+        const endTime = new Date(appointment.endTime);
+        document.getElementById('enddate').value = endTime.toISOString().split('T')[0];
+        document.getElementById('endtime').value = endTime.toTimeString().split(' ')[0];
+
+        const doctor = await getAllUsers().then(users => users.find(user => user.id === appointment.doctorId));
+        const patient = await getAllUsers().then(users => users.find(user => user.id === appointment.patientId));
+        const department = await getAllExpertises().then(expertises => expertises.find(expertise => expertise.name === appointment.department));
+
+        document.getElementById('departmentname-area').innerText = department.name;
+        document.getElementById('doctorname-area').innerText = doctor.firstName + ' ' + doctor.lastName;
+        const [workStart, workEnd] = workPlan2workStartEnd(doctor.workPlan);
+        document.getElementById('worktime-area').innerText = workStart + ' - ' + workEnd;
+        document.getElementById('patientname-area').innerText = patient.firstName + ' ' + patient.lastName;
+
+    }
+
+    function initpage(appointment) {
+        updateFormDatas(appointment);
+    }
+
+    const appointmentId = new URLSearchParams(window.location.search).get('id');
+    if (!appointmentId) {
+        showNotFound();
+    }
+    getAllAppointments().then(appointments => {
+        const appointment = appointments.find(appointment => appointment.id === appointmentId);
+        if (!appointment) {
+            showNotFound();
+        } else {
+            initpage(appointment);
+        }
+    });
+
+    document.getElementById('appointment-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const startdate = document.getElementById('startdate').value;
+        const starttime = document.getElementById('starttime').value;
+
+        const enddate = document.getElementById('enddate').value;
+        const endtime = document.getElementById('endtime').value;
+
+        const start = new Date(startdate + 'T' + starttime);
+        const end = new Date(enddate + 'T' + endtime);
+        try {
+            await updateAppointment(appointmentId, {startTime: start, endTime: end});
+            redirectTo('/admin-appointments');
+        } catch (error) {
+            alert('Appointment failed: ' + error.message);
+        }
+    });
+</script>

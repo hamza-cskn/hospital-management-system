@@ -10,7 +10,6 @@ type AppointmentStatus string
 
 const (
 	StatusPending   AppointmentStatus = "pending"
-	StatusConfirmed AppointmentStatus = "confirmed"
 	StatusCancelled AppointmentStatus = "cancelled"
 	StatusCompleted AppointmentStatus = "completed"
 )

@@ -30,33 +30,17 @@
     </div>
 </nav>
 
-
-<h2>register doctor</h2>
-<form id="doctor-form">
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" required>
+<h2 id="header-title">edit expertise</h2>
+<form id="expertise-form">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required>
     <br>
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required>
+    <label for="description">Description</label>
+    <input type="text" id="description" name="description" required>
     <br>
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName" name="firstName" required>
-    <br>
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" name="lastName" required>
-    <br>
-    <label for="expertises">Expertises</label>
-    <select id="expertises" name="expertises" multiple required><!-- will be filled by scripts --></select>
-    <br>
-    <label for="workstart">Work</label>
-    <br>
-    <label for="workstart">Start Time</label>
-    <input type="time" id="workstart" name="time">
-    <label for="workend">End Time</label>
-    <input type="time" id="workend" name="time">
-    <br>
-    <button type="submit">Register Doctor</button>
+    <button type="submit">save expertise</button>
 </form>
+<button id="delete">delete</button>
 
 <script>
 
@@ -76,41 +60,60 @@
                 document.getElementById('dashboard-item').href = '/profile';
         }
     })();
-    (async () => {
-        const expertises = await getAllExpertises();
-        console.log(expertises);
-        const expertisesSelector = document.getElementById('expertises');
-        expertises.forEach(expertise => {
-            const option = document.createElement('option');
-            option.value = expertise.name;
-            option.textContent = expertise.name;
-            expertisesSelector.appendChild(option);
+    function showNotFound() {
+        // hide the form
+        console.log("showNotFound")
+        document.getElementById('expertise-form').style.display = 'none';
+        document.getElementById("header-title").innerText = "expertise not found";
+    }
+
+    async function updateFormDatas(expertise) {
+        document.getElementById('name').value = expertise.name;
+        document.getElementById('description').value = expertise.description;
+    }
+
+    function initpage(expertise) {
+        updateFormDatas(expertise);
+
+        document.getElementById('expertise-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+
+            try {
+                await updateExpertise(expertise.id, {name, description});
+                redirectTo('/admin-dashboard');
+            } catch (error) {
+                alert('Appointment failed: ' + error.message);
+            }
         });
-    })();
 
-    document.getElementById('doctor-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
+        document.getElementById('delete').addEventListener('click', async (e) => {
+            e.preventDefault();
 
-        const formdata = getDoctorFormDatas()
-        if (formdata === undefined)
-            return;
+            try {
+                await deleteExpertise(expertise.id);
+                redirectTo('/admin-dashboard');
+            } catch (error) {
+                alert('Appointment failed: ' + error.message);
+            }
+        });
 
-        try {
-            await createDoctor({
-                "email": formdata.email,
-                "password": document.getElementById('password').value,
-                "firstName": formdata.firstName,
-                "lastName": formdata.lastName,
-                "role": "doctor",
-                "expertises": formdata.expertises,
-                "workPlan": formdata.workPlan
-            });
-            redirectTo('/patient-dashboard');
-        } catch (error) {
-            alert('Appointment failed: ' + error.message);
-        }
-    });
+    }
 
-
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (id == null) {
+        showNotFound()
+    } else {
+        getAllExpertises().then(expertises => {
+            const exp = expertises.filter(ex => ex.id === id)[0];
+            if (exp == null) {
+                showNotFound()
+            } else {
+                initpage(exp)
+            }
+        });
+    }
 
 </script>

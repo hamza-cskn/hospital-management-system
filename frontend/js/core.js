@@ -1,13 +1,13 @@
 const API_BASE_URL = '/api';
 const CACHE = {
     storage: new Map(),
-    
-    register(key, val, ttl=10) {
+
+    register(key, val, ttl = 10) {
         const expirationTime = ttl ? Date.now() + ttl : null;
-        this.storage.set(key, { value: val, expirationTime });
+        this.storage.set(key, {value: val, expirationTime});
     },
 
-    isCached(key){
+    isCached(key) {
         const cachedEntry = this.storage.get(key);
         if (cachedEntry && (!cachedEntry.expirationTime || cachedEntry.expirationTime > Date.now())) {
             return cachedEntry;
@@ -15,14 +15,14 @@ const CACHE = {
         return false;
     },
 
-    doCached(key, func, ttl=10) {
+    doCached(key, func, ttl = 10) {
         const cachedEntry = this.isCached(key)
         if (cachedEntry) {
             return cachedEntry.value;
         }
 
         const newValue = func();
-        this.register(key, newValue); 
+        this.register(key, newValue);
         return newValue;
     },
 
@@ -47,15 +47,15 @@ async function replaceExpressionsAsync(inputString) {
     const matches = inputString.matchAll(/\${([^}]+)}/g);
     let outputString = inputString;
     let offset = 0;
-  
+
     for (const match of matches) {
         const matchedPart = match[0];
         const originalIndex = match.index;
         const expr = match[1];
         const newIndex = originalIndex + offset;
         let result = await asyncEval(expr);
-    
-        
+
+
         if (result !== undefined && result !== null) {
             if (typeof result == "object")
                 result = JSON.stringify(result);
@@ -64,13 +64,13 @@ async function replaceExpressionsAsync(inputString) {
         } else {
             result = '';
         }
-  
+
         outputString = outputString.slice(0, newIndex) + result + outputString.slice(newIndex + matchedPart.length);
         offset += result.length - matchedPart.length;
     }
 
     return outputString;
-  }
+}
 
 async function renderTags() {
     for (const element of Array.from(document.getElementsByTagName('render'))) {
@@ -80,7 +80,6 @@ async function renderTags() {
     }
 }
 
-// Token management
 function getToken() {
     return localStorage.getItem('token');
 }
@@ -97,7 +96,6 @@ function isAuthenticated() {
     return !!getToken();
 }
 
-// API calls helper
 async function apiCall(endpoint, method = 'GET', body = null) {
     const headers = {
         'Content-Type': 'application/json'
@@ -136,27 +134,12 @@ function redirectTo(url) {
     window.location.href = url;
 }
 
-// Authentication API calls
-/**
- * @example
- * login('doctor@example.com', 'password123')
- */
 async function login(email, password) {
-    const data = await apiCall('/auth/login', 'POST', { email, password });
+    const data = await apiCall('/auth/login', 'POST', {email, password});
     setToken(data.token);
     return data;
 }
 
-/**
- * @example
- * register({
- *   email: 'patient@example.com',
- *   password: 'password123',
- *   firstName: 'John',
- *   lastName: 'Doe',
- *   role: 'patient'
- * })
- */
 async function register(userData) {
     const data = await apiCall('/auth/register', 'POST', userData);
     setToken(data.token);
@@ -168,111 +151,60 @@ async function logout() {
     window.location.href = '/login';
 }
 
-// User profile API calls
-/**
- * Returns user profile data:
- * @example Response:
- * {
- *   id: '123',
- *   email: 'user@example.com',
- *   firstName: 'John',
- *   lastName: 'Doe',
- *   role: 'patient'
- * }
- */
 async function getUserProfile() {
     return CACHE.doCached("userProfile", async () => {
         return await apiCall('/users/profile')
     })
 }
 
-/**
- * @example
- * updateUserProfile({
- *   firstName: 'John',
- *   lastName: 'Smith',
- *   phoneNumber: '1234567890'
- * })
- */
 async function updateUserProfile(profileData) {
     CACHE.invalidate("userProfile")
     return await apiCall('/users/profile', 'PUT', profileData);
 }
 
-// Appointment API calls
-/**
- * @example
- * createAppointment({
- *   doctorId: '123',
- *   date: '2024-01-20',
- *   time: '14:30',
- *   reason: 'Regular checkup',
- *   notes: 'Patient has history of high blood pressure'
- * })
- */
 async function createAppointment(appointmentData) {
     return await apiCall('/appointments', 'POST', appointmentData);
 }
 
-/**
- * Returns array of appointments:
- * @example Response:
- * [{
- *   id: '456',
- *   doctorId: '123',
- *   patientId: '789',
- *   date: '2024-01-20',
- *   time: '14:30',
- *   status: 'scheduled',
- *   reason: 'Regular checkup',
- *   notes: 'Patient has history of high blood pressure'
- * }]
- */
 async function getAppointments() {
     return await apiCall('/appointments?userId=' + (await getUserProfile()).id);
 }
 
-/**
- * @example
- * updateAppointment('456', {
- *   date: '2024-01-21',
- *   time: '15:30',
- *   status: 'rescheduled',
- *   notes: 'Appointment rescheduled at patient request'
- * })
- */
+async function getAllAppointments() {
+    return await apiCall('/appointments');
+}
+
 async function updateAppointment(id, appointmentData) {
     return await apiCall(`/appointments/${id}`, 'PUT', appointmentData);
+}
+
+async function cancelAppointment(appointmentId) {
+    return await updateAppointment(appointmentId, {status: 'cancelled'});
+}
+
+async function doneAppointment(appointmentId) {
+    return await updateAppointment(appointmentId, {status: 'completed'});
 }
 
 async function deleteAppointment(id) {
     return await apiCall(`/appointments/${id}`, 'DELETE');
 }
 
-// Doctor specific API calls
-/**
- * @example
- * updateDoctorExpertise(['expertise_id_1', 'expertise_id_2'])
- */
-async function updateDoctorExpertise(expertiseIds) {
-    return await apiCall('/doctors/expertises', 'PUT', { expertiseIds });
+async function updateExpertise(id, expertiseData) {
+    return await apiCall('/admin/expertises?id='+id, 'PATCH', expertiseData);
 }
 
-// Admin specific API calls
-/**
- * @example
- * createExpertise({
- *   name: 'Cardiology',
- *   description: 'Deals with disorders of the heart'
- * })
- */
+async function deleteExpertise(id) {
+    return await apiCall('/admin/expertises?id='+id, 'DELETE');
+}
+
 async function createExpertise(expertiseData) {
     return await apiCall('/admin/expertises', 'POST', expertiseData);
 }
 
 async function getAllExpertises() {
     return CACHE.doCached("expertisesList", async () => {
-        return await apiCall('/doctors/expertises')
+        return await apiCall('/expertises')
     }, 30)
 }
 
@@ -280,23 +212,14 @@ async function createDoctor(doctorData) {
     return await apiCall('/admin/doctors', 'POST', doctorData);
 }
 
-/**
- * @example
- * getAllUsers('doctor') // to get all doctors
- * getAllUsers('patient') // to get all patients
- * getAllUsers() // to get all users
- * 
- * Returns array of users:
- * @example Response:
- * [{
- *   id: '123',
- *   email: 'doctor@example.com',
- *   firstName: 'Jane',
- *   lastName: 'Smith',
- *   role: 'doctor',
- *   expertises: ['Cardiology', 'Internal Medicine']
- * }]
- */
+async function updateUser(id, doctorData) {
+    return await apiCall('/users?userId=' + id, 'PATCH', doctorData);
+}
+
+async function deleteUser(id) {
+    return await apiCall('/admin/users/' + id, 'DELETE');
+}
+
 async function getAllUsers() {
     return CACHE.doCached("usersList", async () => {
         return await apiCall('/users')
@@ -309,4 +232,32 @@ async function checkIfUserIs(role) {
 
 async function getUserById(userId) {
     return (await getAllUsers()).find(user => user.id === userId);
+}
+
+function workStartEnd2WorkPlan(workstart, workend) {
+    if (workstart >= workend) {
+        alert('Start time must be earlier than end time.');
+        return undefined;
+    }
+
+    const duration = 24 * 60 * 60 * 1e9;
+    const start = new Date(`1970-01-01T${workstart}Z`).getTime() * 1e6;
+    const end = new Date(`1970-01-01T${workend}Z`).getTime() * 1e6;
+    return {periods: [{startMargin: start, endMargin: end, duration}]}
+}
+
+function workPlan2workStartEnd(workPlan) {
+    const start = new Date(workPlan.periods[0].startMargin / 1e6).toISOString().slice(11, 16);
+    const end = new Date(workPlan.periods[0].endMargin / 1e6).toISOString().slice(11, 16);
+    return [start, end];
+}
+
+function getDoctorFormDatas() {
+    const email = document.getElementById('email').value;
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const expertises = Array.from(document.getElementById('expertises').selectedOptions).map(option => option.value);
+    const workPlan = workStartEnd2WorkPlan(document.getElementById('workstart').value,
+        document.getElementById('workend').value)
+    return {email, firstName, lastName, expertises, workPlan};
 }

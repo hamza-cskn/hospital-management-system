@@ -70,8 +70,13 @@ func main() {
 		frontend.GET("/patient-dashboard", handlers.GetStaticPageHandler("patient-dashboard.html"))
 		frontend.GET("/doctor-dashboard", handlers.GetStaticPageHandler("doctor-dashboard.html"))
 		frontend.GET("/admin-dashboard", handlers.GetStaticPageHandler("admin-dashboard.html"))
-		frontend.GET("/book-appointment", handlers.GetStaticPageHandler("book-appointment.html"))
+		frontend.GET("/book-appointment", handlers.GetStaticPageHandler("create-appointment.html"))
 		frontend.GET("/create-doctor", handlers.GetStaticPageHandler("create-doctor.html"))
+		frontend.GET("/edit-doctor", handlers.GetStaticPageHandler("edit-doctor.html"))
+		frontend.GET("/create-expertise", handlers.GetStaticPageHandler("create-expertise.html"))
+		frontend.GET("/edit-expertise", handlers.GetStaticPageHandler("edit-expertise.html"))
+		frontend.GET("/admin-appointments", handlers.GetStaticPageHandler("admin-appointments.html"))
+		frontend.GET("/edit-admin-appointments", handlers.GetStaticPageHandler("edit-admin-appointments.html"))
 	}
 
 	// API routes
@@ -87,7 +92,7 @@ func main() {
 		{
 			// User routes
 			protected.GET("/users/profile", handlers.GetUserProfile(db))
-			protected.PUT("/users/profile", handlers.UpdateUserProfile(db))
+			protected.GET("/expertises", handlers.GetAllExpertises(db))
 
 			// Appointment routes
 			protected.POST("/appointments", handlers.CreateAppointment(db))
@@ -96,15 +101,7 @@ func main() {
 			protected.PUT("/appointments/:id", handlers.UpdateAppointment(db))
 			protected.DELETE("/appointments/:id", handlers.DeleteAppointment(db))
 			protected.GET("/users", handlers.GetAllUsers(db))
-
-			// Doctor routes
-			doctorRoutes := protected.Group("/doctors")
-			doctorRoutes.Use(middleware.RequireRole(string(models.RoleDoctor), string(models.RoleAdmin)))
-			{
-				//doctorRoutes.GET("/appointments", handlers.GetDoctorAppointments(db))
-				doctorRoutes.PUT("/expertises", handlers.UpdateDoctorExpertise(db))
-				doctorRoutes.GET("/expertises", handlers.GetAllExpertises(db))
-			}
+			protected.PATCH("/users", handlers.UpdateUserProfile(db))
 
 			// Admin routes
 			adminRoutes := protected.Group("/admin")
@@ -112,6 +109,8 @@ func main() {
 			{
 				adminRoutes.POST("/doctors", handlers.CreateDoctor(db))
 				adminRoutes.POST("/expertises", handlers.CreateExpertise(db))
+				adminRoutes.DELETE("/expertises", handlers.DeleteExpertise(db))
+				adminRoutes.PATCH("/expertises", handlers.UpdateExpertise(db))
 				adminRoutes.PUT("/users/:id", handlers.UpdateUser(db))
 				adminRoutes.DELETE("/users/:id", handlers.DeleteUser(db))
 			}

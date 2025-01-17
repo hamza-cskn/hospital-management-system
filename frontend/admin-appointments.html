@@ -1,15 +1,9 @@
-<title>Patient Dashboard</title>
+<script src="js/core.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/styles.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-        crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"
-        integrity="sha256-u0L8aA6Ev3bY2HI4y0CAyr9H8FRWgX4hZ9+K7C2nzdc=" crossorigin="anonymous"></script>
-
-<script src="js/core.js"></script>
 <script>
-    checkIfUserIs('patient').then(isPatient => {
-        if (!isPatient) {
+    checkIfUserIs('admin').then(isAdmin => {
+        if (!isAdmin) {
             redirectTo('/profile');
         }
     });
@@ -36,8 +30,6 @@
     </div>
 </nav>
 
-<h1>Patient Dashboard</h1>
-<a id="book-appointment" href="/book-appointment"> Book New Appointment</a>
 
 <div id="my-appointments">
     <h1>Appointment</h1>
@@ -52,6 +44,7 @@
 </div>
 
 <script>
+
     (async () => {
         const user = await getUserProfile();
         switch (user.role) {
@@ -68,26 +61,43 @@
                 document.getElementById('dashboard-item').href = '/profile';
         }
     })();
-
     (async () => {
         try {
-            const appointments = await getAppointments();
+            const appointments = await getAllAppointments();
 
             const upcomingContainer = document.querySelector('#upcoming-appointments-container');
             const pastContainer = document.querySelector('#past-appointments-container');
 
             for (const appointment of appointments) {
                 const doctor = await getUserById(appointment.doctorId);
+                const patient = await getUserById(appointment.patientId);
+                if (doctor == null) {
+                    console.log('Doctor not found for appointment:', appointment);
+                    continue
+                }
+                if (patient == null) {
+                    console.log('Patient not found for appointment:', appointment);
+                    continue
+                }
                 const appointmentCard = document.createElement('div');
                 appointmentCard.className = 'appointment-card';
                 appointmentCard.innerHTML = `
-                    <h5>${doctor.firstName} ${doctor.lastName}</h5>
-                    <p>Status: ${appointment.status}</p>
-                    <p>Note: ${appointment.notes}</p>
-                    <p>Department: ${appointment.department}</p>
-                    <p>Date: ${new Date(appointment.startTime).toLocaleString()}</p>
-                    <p>Duration: ${Math.round((new Date(appointment.endTime) - new Date(appointment.startTime)) / 60000)} minutes</p>
-                    ${appointment.status === 'pending' ? `<button id="cancel-button-${appointment.id}">Cancel</button>` : ''}
+                    <span>Doctor: ${doctor.firstName} ${doctor.lastName}</span>
+                    <br>
+                    <span>Patient: ${patient.firstName} ${patient.lastName}</span>
+                    <br>
+                    <span>Status: ${appointment.status}</span>
+                    <br>
+                    <span>Department: ${appointment.department}</span>
+                    <br>
+                    <span>Date: ${new Date(appointment.startTime).toLocaleString()}</span>
+                    <br>
+                    <span>Duration: ${Math.round((new Date(appointment.endTime) - new Date(appointment.startTime)) / 60000)} minutes</span>
+                    <br>
+                    ${appointment.status === 'pending' ? `<button id="cancel-button-${appointment.id}">Cancel</button><br>` : ''}
+                    <a href="/edit-admin-appointments?id=${appointment.id}">Edit appointment</a>
+                    <br>
+                    <br>
                 `;
 
                 if (new Date(appointment.dateTime) > new Date()) {

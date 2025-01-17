@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -59,8 +58,14 @@ func CreateAppointment(db *config.Database) gin.HandlerFunc {
 			return
 		}
 
+		// Check if the chosen time is in past
+		if req.DateTime.Before(time.Now()) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Appointment time cannot be in the past"})
+			return
+		}
+
 		// Check if the doctor is available at this time.
-		if doctor.WorkPlan.IsIn(req.DateTime.Add(duration)) && doctor.WorkPlan.IsIn(req.DateTime) {
+		if !(doctor.WorkPlan.IsIn(req.DateTime.Add(duration)) && doctor.WorkPlan.IsIn(req.DateTime)) {
 			c.JSON(http.StatusConflict, gin.H{"error": "Doctor is not available at this time"})
 			return
 		}
@@ -118,14 +123,11 @@ func GetAppointments(db *config.Database) gin.HandlerFunc {
 
 		userID := c.Query("userId")
 		if userID != "" {
-			fmt.Printf("userID: %v\n", userID)
-
 			oid, err := primitive.ObjectIDFromHex(userID)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID format"})
 				return
 			}
-
 			filter = bson.M{"$or": []bson.M{{"patientId": oid}, {"doctorId": oid}}}
 		}
 
@@ -184,9 +186,15 @@ func GetAppointment(db *config.Database) gin.HandlerFunc {
 
 func UpdateAppointment(db *config.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		paramid := c.Param("id")
+		if paramid == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Appointment ID is required"})
+			return
+		}
+
+		id, err := primitive.ObjectIDFromHex(paramid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID: " + paramid})
 			return
 		}
 

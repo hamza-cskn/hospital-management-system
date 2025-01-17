@@ -24,7 +24,7 @@ type User struct {
 	LastName   string             `json:"lastName" bson:"lastName"`
 	Role       Role               `json:"role" bson:"role"`
 	CreatedAt  time.Time          `json:"createdAt" bson:"createdAt"`
-	Expertises []Expertise        `json:"expertises" bson:"expertises"`
+	Expertises []string           `json:"expertises" bson:"expertises"`
 	WorkPlan   utils.PeriodicPlan `json:"workPlan" bson:"workPlan"`
 }
 
@@ -36,12 +36,14 @@ type Expertise struct {
 }
 
 func (u *User) HashPassword() error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	u.Password = string(hashedPassword)
-	return nil
+	var err error
+	u.Password, err = HashStr(u.Password)
+	return err
+}
+
+func HashStr(str string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(str), bcrypt.DefaultCost)
+	return string(hashedPassword), err
 }
 
 func (u *User) ComparePassword(password string) error {

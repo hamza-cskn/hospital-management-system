@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -16,6 +17,40 @@ import (
 type CreateExpertiseRequest struct {
 	Name        string `json:"name" binding:"required"`
 	Description string `json:"description" binding:"required"`
+}
+
+type UpdateExpertiseRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description" binding:"required"`
+}
+
+func DeleteExpertise(db *config.Database) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		qid := c.Query("id")
+		if qid == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Expertise ID is required"})
+			return
+		}
+
+		expertiseID, err := primitive.ObjectIDFromHex(qid)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid expertise ID"})
+			return
+		}
+
+		result, err := db.DB.Collection("expertises").DeleteOne(context.Background(), bson.M{"_id": expertiseID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete expertise"})
+			return
+		}
+
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Expertise not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Expertise deleted successfully"})
+	}
 }
 
 func CreateExpertise(db *config.Database) gin.HandlerFunc {
@@ -149,7 +184,14 @@ func UpdateUser(db *config.Database) gin.HandlerFunc {
 
 func DeleteUser(db *config.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID, err := primitive.ObjectIDFromHex(c.Param("id"))
+		paramId := c.Param("id")
+
+		if paramId == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "User ID is required"})
+			return
+		}
+
+		userID, err := primitive.ObjectIDFromHex(paramId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 			return
@@ -158,7 +200,7 @@ func DeleteUser(db *config.Database) gin.HandlerFunc {
 		// Check if user exists and is not an admin
 		var user models.User
 		err = db.DB.Collection("users").FindOne(context.Background(), bson.M{"_id": userID}).Decode(&user)
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
 		}
@@ -193,5 +235,50 @@ func DeleteUser(db *config.Database) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "User and related data deleted successfully"})
+	}
+}
+
+func UpdateExpertise(db *config.Database) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		expertiseID, err := primitive.ObjectIDFromHex(c.Query("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid expertise ID"})
+			return
+		}
+
+		var req UpdateExpertiseRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		newData := bson.M{
+			"name":        req.Name,
+			"description": req.Description,
+		}
+		update := bson.M{
+			"$set": newData,
+		}
+
+		if req.Name != "" {
+			newData["name"] = req.Name
+		}
+
+		if req.Description != "" {
+			newData["description"] = req.Description
+		}
+
+		result, err := db.DB.Collection("expertises").UpdateOne(context.Background(), bson.M{"_id": expertiseID}, update)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update expertise"})
+			return
+		}
+
+		if result.MatchedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Expertise not found: " + expertiseID.Hex()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Expertise updated successfully"})
 	}
 }
