@@ -1,0 +1,46 @@
+<script src="js/core.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<script>
+    checkIfUserIs('admin').then(isAdmin => {
+        if (!isAdmin) {
+            redirectTo('/profile');
+        }
+    });
+</script>
+<title> Welcome </title>
+<nav>
+    <a href="/admin-dashboard">admin dashboard</a>
+    <a href="/doctor-dashboard">doctor dashboard</a>
+    <a href="/patient-dashboard">patient dashboard</a>
+    <a href="/profile">profile</a>
+    <a href="/">home</a>
+</nav>
+
+<div id="doctor-list">
+    <h1>List of Doctors</h1>
+    <a href="/create-doctor">create new doctor</a>
+    <ul id="doctors">
+        <!-- List of doctors will be populated here -->
+    </ul>
+</div>
+
+<script>
+async function fetchDoctors() {
+    try {
+        const doctors = (await getAllUsers()).filter(user => user.role === "doctor")
+
+        const doctorsList = document.querySelector('#doctors');
+        doctorsList.innerHTML = '';
+
+        for (const doctor of doctors) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${doctor.firstName} ${doctor.lastName}`;
+            doctorsList.appendChild(listItem);
+        }
+    } catch (error) {
+        console.error('Error fetching doctors:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', fetchDoctors);
+</script>

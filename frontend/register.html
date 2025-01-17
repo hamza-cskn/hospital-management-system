@@ -1,0 +1,97 @@
+<script src="/js/core.js"></script>
+<link rel="stylesheet" href="/css/styles.css">
+<h1>Register as patient</h1>
+<form id="loginForm">
+    <div>
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" required>
+    </div>
+    <div>
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" required>
+    </div>
+    <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+    </div>
+    <div>
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" required>
+    </div>
+    <button type="submit">Register</button>
+</form>
+
+<script>
+function isEmpty(value) {
+    return value == null || value === '';
+}
+
+function isValidForm() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const email = document.getElementById('email').value;
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+
+    if (isEmpty(password) || isEmpty(confirmPassword)) {
+        alert('Password and confirm password are required');
+        return false;
+    }
+
+    if (isEmpty(email)) {
+        alert('Email is required');
+        return false;
+    }
+
+    if (isEmpty(firstName)) {
+        alert('First name is required');
+        return false;
+    }
+
+    if (isEmpty(lastName)) {
+        alert('Last name is required');
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return false;
+    }
+
+    if (password.length < 8) {
+        alert('Password must be at least 8 characters long');
+        return false;
+    }
+
+    if (!email.includes('@')) {
+        alert('Email must contain an @ symbol');
+        return false;
+    }
+    return true;
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!isValidForm()) return;
+
+    try {
+        await register({
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            role: 'patient'
+        });
+    } catch (error) {
+        alert('Registration failed: ' + error.message);
+        return;
+    }
+    
+    redirectTo('/login');
+});
+</script>

@@ -1,0 +1,100 @@
+<script src="js/core.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<script>
+    checkIfUserIs('admin').then(isAdmin => {
+        if (!isAdmin) {
+            redirectTo('/profile');
+        }
+    });
+</script>
+<title> Welcome </title>
+<nav>
+    <a href="/admin-dashboard">admin dashboard</a>
+    <a href="/doctor-dashboard">doctor dashboard</a>
+    <a href="/patient-dashboard">patient dashboard</a>
+    <a href="/profile">profile</a>
+    <a href="/">home</a>
+</nav>
+
+<h2>register doctor</h2>
+<form id="doctor-form">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
+    <br>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" name="firstName" required>
+    <br>
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" name="lastName" required>
+    <br>
+    <label for="expertises">Expertises</label>
+    <select id="expertises" name="expertises" multiple required><!-- will be filled by scripts --></select>
+    <br>
+    <label for="workstart">Work</label>
+    <br>
+    <label for="workstart">Start Time</label>
+    <input type="time" id="workstart" name="time">
+    <label for="workend">End Time</label>
+    <input type="time" id="workend" name="time">
+    <br>
+    <button type="submit">Register Doctor</button>
+</form>
+
+<script>
+
+    (async () => {
+        const expertises = await getAllExpertises();
+        console.log(expertises);
+        const expertisesSelector = document.getElementById('expertises');
+        expertises.forEach(expertise => {
+            const option = document.createElement('option');
+            option.value = expertise.name;
+            option.textContent = expertise.name;
+            expertisesSelector.appendChild(option);
+        });
+    })();
+
+    document.getElementById('doctor-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const expertises = Array.from(document.getElementById('expertises').selectedOptions).map(option => option.value);
+        const workPlan = {}
+
+        const workstart = document.getElementById('workstart').value;
+        const workend = document.getElementById('workend').value;
+
+        if (workstart >= workend) {
+            alert('Start time must be earlier than end time.');
+            return;
+        }
+
+        const duration = 24 * 60 * 60 * 1e9;
+        const start = new Date(`1970-01-01T${workstart}Z`).getTime() * 1e6;
+        const end = new Date(`1970-01-01T${workend}Z`).getTime() * 1e6;
+        workPlan["periods"] = [{startMargin: start, endMargin: end, duration}];
+
+        try {
+            await createDoctor({
+                email,
+                password,
+                firstName,
+                lastName,
+                "role": "doctor",
+                expertises,
+                workPlan
+            });
+            redirectTo('/patient-dashboard');
+        } catch (error) {
+            alert('Appointment failed: ' + error.message);
+        }
+    });
+
+
+</script>

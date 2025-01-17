@@ -1,0 +1,70 @@
+<title>Patient Dashboard</title>
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js" integrity="sha256-u0L8aA6Ev3bY2HI4y0CAyr9H8FRWgX4hZ9+K7C2nzdc=" crossorigin="anonymous"></script>
+
+<script src="js/core.js"></script>
+<script>
+    checkIfUserIs('patient').then(isPatient => {
+         if (!isPatient) {
+             redirectTo('/profile');
+         }
+    });
+</script>
+<title> Welcome </title>
+<nav>
+    <a href="/admin-dashboard">admin dashboard</a>
+    <a href="/doctor-dashboard">doctor dashboard</a>
+    <a href="/patient-dashboard">patient dashboard</a>
+    <a href="/profile">profile</a>
+    <a href="/">home</a>
+</nav>
+
+<h1>Patient Dashboard</h1>
+<a id="book-appointment" href="/book-appointment"> Book New Appointment</a>
+
+<div id="my-appointments">
+    <h1>Appointment</h1>
+    <div id="upcoming-appointments">
+        <h2>Upcoming Appointment</h2>
+        <div id="upcoming-appointments-container"></div>
+    </div>
+    <div id="past-appointments">
+        <h2>Past Appointment</h2>
+        <div id="past-appointments-container"></div>
+    </div>
+</div>
+
+<script>
+async function fetchAppointments() {
+    try {
+        const appointments = await getAppointments();
+
+        const upcomingContainer = document.querySelector('#upcoming-appointments-container');
+        const pastContainer = document.querySelector('#past-appointments-container');
+
+        for (const appointment of appointments) {
+            const doctor = await getUserById(appointment.doctorId);
+            const appointmentCard = document.createElement('div');
+            appointmentCard.className = 'appointment-card';
+            appointmentCard.innerHTML = `
+                <h5>${doctor.firstName} ${doctor.lastName}</h5>
+                <p>Status: ${appointment.status}</p>
+                <p>Note: ${appointment.notes}</p>
+                <p>Department: ${appointment.department}</p>
+                <p>Date: ${new Date(appointment.startTime).toLocaleString()}</p>
+                <p>Duration: ${Math.round((new Date(appointment.endTime) - new Date(appointment.startTime)) / 60000)} minutes</p>
+            `;
+
+            if (new Date(appointment.dateTime) > new Date()) {
+                upcomingContainer.appendChild(appointmentCard);
+            } else {
+                pastContainer.appendChild(appointmentCard);
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+    }
+}
+document.addEventListener('DOMContentLoaded', fetchAppointments);
+</script>

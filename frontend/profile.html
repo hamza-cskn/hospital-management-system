@@ -1,0 +1,21 @@
+<script src="js/core.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<title> Welcome </title>
+<nav>
+    <a href="/admin-dashboard">admin dashboard</a>
+    <a href="/doctor-dashboard">doctor dashboard</a>
+    <a href="/patient-dashboard">patient dashboard</a>
+    <a href="/profile">profile</a>
+    <a href="/">home</a>
+</nav>
+
+profile page
+<render>
+    <p>
+        Name: ${(await getUserProfile()).firstName}
+        Surname: ${(await getUserProfile()).id}
+    </p>
+</render>
+<script>
+    renderTags();
+</script>

@@ -1,0 +1,422 @@
+{
+	"info": {
+		"_postman_id": "b5b6b5b6-b5b6-b5b6-b5b6-b5b6b5b6b5b6",
+		"name": "Hospital Management API",
+		"description": "API collection for Hospital Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"patient@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"role\": \"patient\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"patient@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John Updated\",\n    \"lastName\": \"Doe Updated\",\n    \"email\": \"updated@example.com\",\n    \"password\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Appointments",
+			"item": [
+				{
+					"name": "Create Appointment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorId\": \"{{doctor_id}}\",\n    \"dateTime\": \"2024-01-20T14:30:00Z\",\n    \"department\": \"Cardiology\",\n    \"notes\": \"Regular checkup\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/appointments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "appointments"]
+						}
+					}
+				},
+				{
+					"name": "Get All Appointments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/appointments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "appointments"]
+						}
+					}
+				},
+				{
+					"name": "Get Appointment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/appointments/{{appointment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "appointments", "{{appointment_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Appointment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"confirmed\",\n    \"notes\": \"Updated notes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/appointments/{{appointment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "appointments", "{{appointment_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Appointment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/appointments/{{appointment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "appointments", "{{appointment_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Doctor",
+			"item": [
+				{
+					"name": "Get Doctor Appointments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/doctors/appointments?status=pending&startDate=2024-01-01T00:00:00Z&endDate=2024-12-31T23:59:59Z",
+							"host": ["{{base_url}}"],
+							"path": ["api", "doctors", "appointments"],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending"
+								},
+								{
+									"key": "startDate",
+									"value": "2024-01-01T00:00:00Z"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31T23:59:59Z"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Doctor Expertise",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expertiseIds\": [\"{{expertise_id_1}}\", \"{{expertise_id_2}}\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/doctors/expertises",
+							"host": ["{{base_url}}"],
+							"path": ["api", "doctors", "expertises"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Create Doctor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"doctor@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Smith\",\n    \"expertises\": [\"Cardiology\", \"Internal Medicine\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/doctors",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "doctors"]
+						}
+					}
+				},
+				{
+					"name": "Create Expertise",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Neurology\",\n    \"description\": \"Deals with disorders of the nervous system\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/expertises",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "expertises"]
+						}
+					}
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/users?role=doctor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "users"],
+							"query": [
+								{
+									"key": "role",
+									"value": "doctor",
+									"description": "Optional filter by role"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Updated Name\",\n    \"lastName\": \"Updated Last Name\",\n    \"email\": \"updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "users", "{{user_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "users", "{{user_id}}"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": "your_jwt_token_here"
+		},
+		{
+			"key": "doctor_id",
+			"value": "doctor_object_id_here"
+		},
+		{
+			"key": "appointment_id",
+			"value": "appointment_object_id_here"
+		},
+		{
+			"key": "user_id",
+			"value": "user_object_id_here"
+		},
+		{
+			"key": "expertise_id_1",
+			"value": "expertise_object_id_1_here"
+		},
+		{
+			"key": "expertise_id_2",
+			"value": "expertise_object_id_2_here"
+		}
+	]
+} 
