@@ -8,7 +8,9 @@
         }
     });
 </script>
+
 <title> Welcome </title>
+<body class="bg-gray-900 antialiased">
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <div class="hidden w-full md:block md:w-auto" id="navbar-default">
@@ -31,19 +33,60 @@
 </nav>
 
 
-<a href="/admin-appointments">all appointments</a>
-<div id="doctor-list">
-    <h3>List of expertises</h3>
-    <a href="/create-expertise">create new expertise</a>
-    <ul id="expertises">
-        <!-- List of expertises will be populated here -->
-    </ul>
-    <h3>List of Doctors</h3>
-    <a href="/create-doctor">create new doctor</a>
-    <ul id="doctors">
-        <!-- List of doctors will be populated here -->
-    </ul>
+<div class="border p-5 my-5 mx-10 rounded border-gray-700 bg-gray-800">
+    <a class="inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+       href="/admin-appointments">See All Appointments</a>
+    <span class="mx-5">Currently, N appointment planned for future and N appointment completed before.</span>
 </div>
+<div class="flex m-5 min-h-screen">
+    <div class="border p-5 m-5 rounded border-gray-700 bg-gray-800 w-1/2">
+        <h3 class="font-bold text-3xl my-5">Expertises</h3>
+        <a class="inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2
+mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" href="/create-expertise">Create
+            New Expertise</a>
+        <ul class="my-5 border border-gray-600 rounded" id="expertises">
+            <!-- List of expertises will be populated here -->
+        </ul>
+    </div>
+    <div class="border p-5 m-5 rounded border-gray-700 bg-gray-800 w-1/2" id="doctor-list">
+        <h3 class="font-bold text-3xl my-5">Doctors</h3>
+        <a class="inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2
+mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" href="/create-doctor">Create
+            New Doctor</a>
+        <!-- <ul class="my-5" id="doctors">
+             List of doctors will be populated here
+        </ul> -->
+
+
+        <div class="relative overflow-x-auto rounded-lg border border-gray-600 my-5">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+                <tr class="">
+                    <th scope="col" class="px-6 py-3">
+                        Doctor Name
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Expertises
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        E-Mail
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Work Time
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="doctors">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+
 
 <script>
 
@@ -70,10 +113,26 @@
             const doctorsList = document.querySelector('#doctors');
             doctorsList.innerHTML = '';
 
+            let i = 1
             for (const doctor of doctors) {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `<a href="/edit-doctor?id=${doctor.id}">${doctor.firstName} ${doctor.lastName}</a>`;
-                doctorsList.appendChild(listItem);
+                doctorsList.innerHTML += `
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-900">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        Dr. ${doctor.firstName} ${doctor.lastName}
+                    </th>
+                    <td class="px-6 py-4">
+                        ${doctor.expertises.join(", ")}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${doctor.email}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${workPlan2workStartEnd(doctor.workPlan).join(" - ")}
+                    </td>
+                    <td class="px-6 py-4">
+                        <a class="text-blue-400 hover:underline" href="/edit-doctor?id=${doctor.id}">Edit</a>
+                    </td>
+                </tr>`
             }
         } catch (error) {
             console.error('Error fetching doctors:', error);
@@ -87,7 +146,12 @@
 
         for (const expertise of expertises) {
             const listItem = document.createElement('li');
-            listItem.innerHTML = `<a href="/edit-expertise?id=${expertise.id}">${expertise.name}</a> ${expertise.description}`;
+            listItem.innerHTML = `
+            <a href="/edit-expertise?id=${expertise.id}" class="block bg-gray-700 hover:bg-gray-800 p-5">
+                <span class="font-bold mr-5">${expertise.name}</span>
+                <span>${expertise.description}</span>
+            </a>
+            `;
             expertisesList.appendChild(listItem);
         }
     })();

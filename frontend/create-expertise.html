@@ -31,15 +31,31 @@
 </nav>
 
 
-<h2>register expertise</h2>
-<form id="expertise-form">
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" required>
-    <br>
-    <label for="description">Description</label>
-    <input type="text" id="description" name="description" required>
-    <br>
-    <button type="submit">Register expertise</button>
+<h2 class="font-bold text-3xl m-5">Create Expertise</h2>
+<form id="expertise-form" class="block m-5 p-5 w-min mx-auto border rounded border-gray-600 bg-gray-800 space-y-5">
+    <table class="w-full">
+        <tr>
+            <td class="pr-4">
+                <label for="name" class="text-white font-bold">Name</label>
+            </td>
+            <td>
+                <input type="text" id="name" name="name"  placeholder="Cardiology" class="rounded outline-none p-2" required>
+            </td>
+        </tr>
+        <tr>
+            <td class="pr-4">
+                <label for="description" class="text-white font-bold">Description</label>
+            </td>
+            <td>
+                <input type="text" id="description" name="description" placeholder="Description of Cardiology" class="rounded outline-none p-2" required>
+            </td>
+        </tr>
+    </table>
+
+    <button type="submit" class="inline-block text-white bg-blue-700 hover:bg-blue-800
+          focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm
+          px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700
+          focus:outline-none dark:focus:ring-blue-800">Save Expertise</button>
 </form>
 
 <script>

@@ -22,6 +22,12 @@ type CreateAppointmentRequest struct {
 	Notes      string    `json:"notes"`
 }
 
+type UpdateAppointmentRequest struct {
+	StartTime time.Time `json:"startTime"`
+	EndTime   time.Time `json:"endTime"`
+	Status    string    `json:"status"`
+}
+
 func CreateAppointment(db *config.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req CreateAppointmentRequest
@@ -58,13 +64,15 @@ func CreateAppointment(db *config.Database) gin.HandlerFunc {
 			return
 		}
 
+		req.DateTime = req.DateTime.Add(time.Hour * 3)
+
 		// Check if the chosen time is in past
 		if req.DateTime.Before(time.Now()) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Appointment time cannot be in the past"})
 			return
 		}
 
-		// Check if the doctor is available at this time.
+		// line above throws exception
 		if !(doctor.WorkPlan.IsIn(req.DateTime.Add(duration)) && doctor.WorkPlan.IsIn(req.DateTime)) {
 			c.JSON(http.StatusConflict, gin.H{"error": "Doctor is not available at this time"})
 			return
@@ -198,18 +206,38 @@ func UpdateAppointment(db *config.Database) gin.HandlerFunc {
 			return
 		}
 
-		var updateReq map[string]interface{}
+		var updateReq UpdateAppointmentRequest
 		if err := c.ShouldBindJSON(&updateReq); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
+		updateFields := bson.M{}
+		if !updateReq.StartTime.IsZero() {
+			if updateReq.StartTime.Before(time.Now()) {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Appointment start time cannot be in the past"})
+				return
+			}
+			updateFields["startTime"] = updateReq.StartTime
+		}
+
+		if !updateReq.EndTime.IsZero() {
+			if updateReq.EndTime.Before(updateReq.StartTime) {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Appointment end time cannot be before start time"})
+				return
+			}
+			updateFields["endTime"] = updateReq.EndTime
+		}
+
+		if updateReq.Status != "" {
+			updateFields["status"] = updateReq.Status
+		}
+
 		result, err := db.DB.Collection("appointments").UpdateOne(
 			context.Background(),
 			bson.M{"_id": id},
-			bson.M{"$set": updateReq},
+			bson.M{"$set": updateFields},
 		)
-
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update appointment"})
 			return

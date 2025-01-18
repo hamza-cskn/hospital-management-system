@@ -42,30 +42,110 @@
 </nav>
 
 
-<h2 id="header-title">edit doctor</h2>
-<form id="doctor-form">
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" required>
-    <br>
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName" name="firstName" required>
-    <br>
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" name="lastName" required>
-    <br>
-    <label for="expertises">Expertises</label>
-    <select id="expertises" name="expertises" multiple required><!-- will be filled by scripts --></select>
-    <br>
-    <label for="workstart">Work</label>
-    <br>
-    <label for="workstart">Start Time</label>
-    <input type="time" id="workstart" name="time">
-    <label for="workend">End Time</label>
-    <input type="time" id="workend" name="time">
-    <br>
-    <button type="submit">save doctor</button>
-    <button id="delete-doctor">delete doctor</button>
+<h2 id="header-title" class="font-bold text-3xl m-5">Edit Doctor</h2>
+<form id="doctor-form"
+      class="block mx-5 p-5 border
+             rounded border-gray-600 bg-gray-800 space-y-5 ">
+    <table class="w-full border-spacing-y-5 border-separate">
+        <!-- Email -->
+        <tr >
+            <td class="pr-4 ">
+                <label for="email" class="text-white font-bold">Email</label>
+            </td>
+            <td>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="hamza@utku.com"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                       required>
+            </td>
+        </tr>
+        <!-- First Name -->
+        <tr>
+            <td class="pr-4">
+                <label for="firstName" class="text-white font-bold">First Name</label>
+            </td>
+            <td>
+                <input type="text"
+                       id="firstName"
+                       name="firstName"
+                       placeholder="Hamza"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                       required>
+            </td>
+        </tr>
+        <!-- Last Name -->
+        <tr>
+            <td class="pr-4">
+                <label for="lastName" class="text-white font-bold">Last Name</label>
+            </td>
+            <td>
+                <input type="text"
+                       id="lastName"
+                       name="lastName"
+                       placeholder="DAŞAR"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                       required>
+            </td>
+        </tr>
+        <!-- Expertises (Multiple) -->
+        <tr>
+            <td class="pr-4 align-top">
+                <label for="expertises" class="text-white font-bold">Expertises</label>
+            </td>
+            <td>
+                <select id="expertises"
+                        name="expertises"
+                        multiple
+                        required
+                        class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none">
+                    <!-- Options will be added by script -->
+                </select>
+                <p class="text-xs text-gray-400">
+                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple
+                </p>
+            </td>
+        </tr>
+        <!-- Work Times -->
+        <tr>
+            <td class="pr-4 align-top">
+                <label for="workstart" class="text-white font-bold">Work Hours</label>
+            </td>
+            <td class="text-white">
+                <div>
+                    <label for="workstart" class="mr-2 my-2">Start Time</label>
+                    <input type="time" id="workstart" name="workstart" class=" bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label for="workend" class="mr-2">End Time &nbsp;</label>
+                    <input type="time" id="workend" name="workend" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none">
+                </div>
+            </td>
+        </tr>
+        <!-- Submit -->
+        <tr>
+            <td colspan="2" class="pt-4">
+                <button
+                        class="inline-block text-white bg-blue-700 hover:bg-blue-800
+                           focus:ring-4 focus:ring-blue-300 font-medium
+                           rounded-lg text-sm px-5 py-2.5 me-2
+                           dark:bg-blue-600 dark:hover:bg-blue-700
+                           focus:outline-none dark:focus:ring-blue-800"
+                        type="submit">
+                    Save Doctor
+                </button>
+
+                <button id="delete-doctor" class="inline-block text-white bg-red-700 hover:bg-red-800
+          focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm
+          px-5 py-2.5 me-2 dark:bg-red-600 dark:hover:bg-red-700
+          focus:outline-none dark:focus:ring-red-800">Delete Doctor</button>
+
+            </td>
+        </tr>
+    </table>
 </form>
+
 
 <script>
 

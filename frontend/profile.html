@@ -25,7 +25,7 @@
 
 <div class="m-12">
     <h1 class="text-xl text-center font-bold">Profile</h1>
-    <p id="profile-data" class="block p-5 mx-48 my-12 rounded border border-gray-400 mx-auto shadow bg-gray-100">
+    <p id="profile-data" class="block p-5 mx-48 my-12 rounded border border-gray-400 mx-auto shadow bg-gray-700">
     </p>
 </div>
 <script>
@@ -45,12 +45,12 @@
                 document.getElementById('dashboard-item').href = '/profile';
         }
         document.getElementById('profile-data').innerHTML = `
-        <span class="font-bold text-black">Name:</span> ${user.firstName} ${user.lastName} <br>
-        <span class="font-bold text-black">Email:</span> ${user.email} <br>
-        <span class="font-bold text-black">Role:</span> ${user.role} <br>
-        ${user.role === "doctor" ? ('<span class="font-bold text-black">Expertises: </span>' + (user.expertises ? user.expertises.join(", ") : "None") + "<br>") : ""}
-        ${user.role === "doctor" ? ('<span class="font-bold text-black">Work Time: </span>' + workPlan2workStartEnd(user.workPlan).join(" - ") + "<br>") : ""}
-        ${user.role === "doctor" ? `<br><a class="text-blue-600 hover:underline" href="/edit-doctor?id=${user.id}">Edit the profile</a><br>` : ""}
+        <span class="font-bold text-gray-200">Name:</span> ${user.firstName} ${user.lastName} <br>
+        <span class="font-bold text-gray-200">Email:</span> ${user.email} <br>
+        <span class="font-bold text-gray-200">Role:</span> ${user.role} <br>
+        ${user.role === "doctor" ? ('<span class="font-bold text-gray-200">Expertises: </span>' + (user.expertises ? user.expertises.join(", ") : "None") + "<br>") : ""}
+        ${user.role === "doctor" ? ('<span class="font-bold text-gray-200">Work Time: </span>' + workPlan2workStartEnd(user.workPlan).join(" - ") + "<br>") : ""}
+        ${user.role === "doctor" ? `<br><a class="text-blue-300 hover:underline" href="/edit-doctor?id=${user.id}">Edit the profile</a><br>` : ""}
         `
     })();
 </script>

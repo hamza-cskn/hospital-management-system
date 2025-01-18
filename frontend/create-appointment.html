@@ -35,42 +35,102 @@
     </div>
 </nav>
 
+<h2 class="font-bold text-3xl m-5">Create Appointment</h2>
+<form id="appointment-form" class="block m-5 p-5 w-min mx-auto border rounded border-gray-600 bg-gray-800 space-y-5">
+    <table class="w-full">
+        <!-- Department -->
+        <tr>
+            <td class="pr-4">
+                <label for="department" class="text-white font-bold">Department</label>
+            </td>
+            <td>
+                <select id="department" name="department" class="rounded outline-none p-2">
+                    <!-- Will be filled by scripts -->
+                </select>
+            </td>
+        </tr>
 
-<h2>Create appointment</h2>
-<form id="appointment-form">
-    <label for="department">Department</label>
-    <select id="department" name="department">
-        <!-- Will be filled by scripts -->
-    </select>
-    <br>
+        <!-- Doctor -->
+        <tr>
+            <td class="pr-4">
+                <label for="doctor" class="text-white font-bold">Doctor</label>
+            </td>
+            <td>
+                <select id="doctor" name="doctor" class="rounded outline-none p-2">
+                    <!-- Will be filled by scripts -->
+                </select>
+            </td>
+        </tr>
 
-    <label for="doctor">Doctor</label>
-    <select id="doctor" name="doctor">
-        <!-- Will be filled by scripts -->
-    </select>
-    <br>
-    <span id="worktime-area"> <!-- will be filled by scripts ---></span>
-    <br>
+        <!-- Work Time -->
+        <tr>
+            <td class="pr-4">
+                <label class="text-white font-bold">Work Time</label>
+            </td>
+            <td>
+                <span id="worktime-area" class="text-white block py-2">
+                  <!-- Will be filled by scripts -->
+                </span>
+            </td>
+        </tr>
 
-    <label for="date">Date</label>
-    <input type="date" id="date" name="date">
-    <br>
+        <!-- Date -->
+        <tr>
+            <td class="pr-4">
+                <label for="date" class="text-white font-bold">Date</label>
+            </td>
+            <td>
+                <input type="date" id="date" name="date" class="rounded outline-none p-2">
+            </td>
+        </tr>
 
-    <label for="time">Time</label>
-    <input type="time" id="time" name="time">
-    <br>
+        <!-- Time -->
+        <tr>
+            <td class="pr-4">
+                <label for="time" class="text-white font-bold">Time</label>
+            </td>
+            <td>
+                <input type="time" id="time" name="time" class="rounded outline-none p-2">
+            </td>
+        </tr>
 
-    <label for="duration">Duration</label>
-    <input type="number" id="duration" name="duration" min="1">
-    <label for="duration">minutes</label>
-    <br>
+        <!-- Duration -->
+        <tr>
+            <td class="pr-4">
+                <label for="duration" class="text-white font-bold">Duration</label>
+            </td>
+            <td>
+                <input type="number" id="duration" name="duration" class="rounded outline-none p-2" value="15" min="1" max="60">
+                <label for="duration" class="text-white">minutes</label>
+            </td>
+        </tr>
 
-    <label for="note">Note</label>
-    <br>
-    <textarea id="note" name="note" style="max-width: 100%; max-height: 400px"></textarea>
-    <br>
+        <!-- Note -->
+        <tr>
+            <td class="pr-4 align-top">
+                <label for="note" class="text-white font-bold">Note</label>
+            </td>
+            <td>
+                <textarea id="note" name="note" class="rounded outline-none p-2"
+                          style="max-width: 100%; min-width: 400px; max-height: 400px"></textarea>
+            </td>
+        </tr>
 
-    <button type="submit">Book appointment</button>
+        <!-- Submit Button -->
+        <tr>
+            <td colspan="2" class="pt-4">
+                <button
+                        class="inline-block text-white bg-blue-700 hover:bg-blue-800
+          focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm
+          px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700
+          focus:outline-none dark:focus:ring-blue-800"
+                        type="submit"
+                >
+                    Book appointment
+                </button>
+            </td>
+        </tr>
+    </table>
 </form>
 
 <script>
@@ -151,8 +211,8 @@
         getAllUsers().then(users => {
             const doctorSelector = document.getElementById('doctor');
             const doctor = users.filter(user => user.id === doctorSelector.value)[0];
-            const [start,end] = workPlan2workStartEnd(doctor.workPlan);
-            document.getElementById("worktime-area").innerText = `Work Time: ${start} - ${end}`;
+            const [start, end] = workPlan2workStartEnd(doctor.workPlan);
+            document.getElementById("worktime-area").innerText = `${start} - ${end}`;
         });
     }
 
@@ -171,7 +231,7 @@
             // Create the new appointment
             await createAppointment({
                 "doctorId": doctorId,
-                "dateTime": new Date(date + 'T' + time + 'Z').toISOString(),
+                "dateTime": new Date(date + 'T' + time),
                 "department": department,
                 "notes": note,
                 "duration": duration + "m"

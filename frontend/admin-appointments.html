@@ -31,15 +31,83 @@
 </nav>
 
 
+<h3 class="font-bold text-3xl m-5">Appointment</h3>
 <div id="my-appointments">
-    <h1>Appointment</h1>
-    <div id="upcoming-appointments">
-        <h2>Upcoming Appointment</h2>
-        <div id="upcoming-appointments-container"></div>
+    <div id="upcoming-appointments" class="block m-5 p-5  border rounded border-gray-700 bg-gray-800">
+        <h3 class="font-bold text-xl">Upcoming Appointment</h3>
+        <div class="relative overflow-x-auto rounded-lg border border-gray-600 my-5">
+            <table id="upcoming-appointments-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+                <tr class="">
+                    <th scope="col" class="px-6 py-3">
+                        Doctor
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Patient
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Department
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Duration
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="upcoming-appointments-container">
+
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div id="past-appointments">
-        <h2>Past Appointment</h2>
-        <div id="past-appointments-container"></div>
+    <div id="past-appointments" class="block m-5 p-5 border rounded border-gray-700 bg-gray-800">
+        <h3 class="font-bold text-xl">Past Appointments</h3>
+        <div class="relative overflow-x-auto rounded-lg border border-gray-600 my-5">
+            <table id="past-appointments-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+                <tr class="">
+                    <th scope="col" class="px-6 py-3">
+                        Doctor
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Patient
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Department
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Duration
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="past-appointments-container">
+
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -68,6 +136,7 @@
             const upcomingContainer = document.querySelector('#upcoming-appointments-container');
             const pastContainer = document.querySelector('#past-appointments-container');
 
+            let upcomingCount = 0, pastCount = 0;
             for (const appointment of appointments) {
                 const doctor = await getUserById(appointment.doctorId);
                 const patient = await getUserById(appointment.patientId);
@@ -79,44 +148,72 @@
                     console.log('Patient not found for appointment:', appointment);
                     continue
                 }
-                const appointmentCard = document.createElement('div');
-                appointmentCard.className = 'appointment-card';
-                appointmentCard.innerHTML = `
-                    <span>Doctor: ${doctor.firstName} ${doctor.lastName}</span>
-                    <br>
-                    <span>Patient: ${patient.firstName} ${patient.lastName}</span>
-                    <br>
-                    <span>Status: ${appointment.status}</span>
-                    <br>
-                    <span>Department: ${appointment.department}</span>
-                    <br>
-                    <span>Date: ${new Date(appointment.startTime).toLocaleString()}</span>
-                    <br>
-                    <span>Duration: ${Math.round((new Date(appointment.endTime) - new Date(appointment.startTime)) / 60000)} minutes</span>
-                    <br>
-                    ${appointment.status === 'pending' ? `<button id="cancel-button-${appointment.id}">Cancel</button><br>` : ''}
-                    <a href="/edit-admin-appointments?id=${appointment.id}">Edit appointment</a>
-                    <br>
-                    <br>
-                `;
 
-                if (new Date(appointment.dateTime) > new Date()) {
-                    upcomingContainer.appendChild(appointmentCard);
+                const rowHtml = `
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        Dr. ${doctor.firstName} ${doctor.lastName}
+                    </th>
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        ${patient.firstName} ${patient.lastName}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${appointment.status}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${appointment.department}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${new Date(appointment.startTime).toLocaleString()}
+                    </td>
+                    <td class="px-6 py-4">
+                        ${Math.round((new Date(appointment.endTime) - new Date(appointment.startTime)) / 60000)} minutes
+                    </td>
+                    <td class="px-6 py-4">
+                        ${appointment.status === 'pending' ? `<button class="inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" id="cancel-button-${appointment.id}">Cancel</button>` : ''}
+                    </td>
+                    <td class="px-6 py-4">
+                        <a class="inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" href="/edit-admin-appointments?id=${appointment.id}">Edit</a>
+                    </td>
+                </tr>`
+
+                if (new Date(appointment.startTime) > new Date()) {
+                    upcomingContainer.innerHTML += rowHtml;
+                    upcomingCount++;
                 } else {
-                    pastContainer.appendChild(appointmentCard);
+                    pastContainer.innerHTML += rowHtml;
+                    pastCount++;
                 }
 
-                document.getElementById("cancel-button-"+appointment.id)?.addEventListener('click', async (event) => {
-                    const appointmentId = event.target.id.substring("cancel-button-".length);
-                    try {
-                        await cancelAppointment(appointmentId);
-                        alert('Appointment cancelled successfully');
-                        location.reload();
-                    } catch (error) {
-                        alert('Failed to cancel appointment: ' + error.message);
+                const btn = document.getElementById("cancel-button-" + appointment.id);
+                if (btn) {
+
+
+                }
+            }
+
+            const buttons = document.querySelectorAll("[id^='cancel-button-']");
+            buttons.forEach(btn => {
+                btn.addEventListener('click', async (event) => {
+                    event.preventDefault();
+
+                    if (event.target.id.startsWith('cancel-button-')) {
+                        const appointmentId = event.target.id.substring("cancel-button-".length);
+                        try {
+                            await cancelAppointment(appointmentId);
+                            location.reload();
+                        } catch (error) {
+                            alert('Failed to cancel appointment: ' + error.message);
+                        }
                     }
                 });
+            });
 
+            if (upcomingCount === 0) {
+                document.getElementById("upcoming-appointments-table").innerHTML = '<div class="text-bold text-xl py-6 text-gray-800 text-center bg-red-200 w-full ">No upcoming appointments</div>';
+            }
+            if (pastCount === 0) {
+                document.getElementById("past-appointments-table").innerHTML = '<div class="text-bold text-xl py-6 text-gray-800 text-center bg-red-200 w-full ">No past appointments</div>';
             }
         } catch (error) {
             console.error('Error fetching appointments:', error);

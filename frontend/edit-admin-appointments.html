@@ -1,4 +1,5 @@
 <script src="js/core.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/styles.css">
 <script>
     checkIfUserIs('admin').then(isAdmin => {
@@ -30,37 +31,154 @@
     </div>
 </nav>
 
+<h2 id="header-title" class="font-bold text-3xl m-5">Edit Appointment</h2>
+<form id="appointment-form"
+      class="block mx-5 p-5 border
+             rounded border-gray-600 bg-gray-800 space-y-5">
+    <table class="w-full border-spacing-y-5 border-separate">
+        <!-- Department -->
+        <tr>
+            <td class="pr-4">
+                <label class="text-white font-bold">Department</label>
+            </td>
+            <td>
+                <span id="departmentname-area" class="text-white">
+                    <!-- will be filled by scripts -->
+                </span>
+            </td>
+        </tr>
 
-<h2 id="header-title">edit appointment</h2>
-<form id="appointment-form">
-    <label>Department</label>
-    <br>
-    <span id="departmentname-area"> <!-- will be filled by scripts ---></span>
-    <br>
-    <label>Doctor</label>
-    <br>
-    <span id="doctorname-area"> <!-- will be filled by scripts ---></span>
-    <span id="worktime-area"> <!-- will be filled by scripts ---></span>
-    <br>
-    <label>Patient</label>
-    <br>
-    <span id="patientname-area"> <!-- will be filled by scripts ---></span>
+        <!-- Doctor + Work Time -->
+        <tr>
+            <td class="pr-4">
+                <label class="text-white font-bold">Doctor</label>
+            </td>
+            <td>
+                <span id="doctorname-area" class="text-white mr-4">
+                    <!-- will be filled by scripts -->
+                </span>
+                <span id="worktime-area" class="text-white">
+                    <!-- will be filled by scripts -->
+                </span>
+            </td>
+        </tr>
 
-    <h3>Start Time</h3>
-    <label for="startdate">Date</label>
-    <input type="date" id="startdate" name="date">
-    <br>
-    <label for="starttime">Time</label>
-    <input type="time" id="starttime" name="time">
-    <br>
-    <h3>End Time</h3>
-    <label for="enddate">Date</label>
-    <input type="date" id="enddate" name="date">
-    <br>
-    <label for="endtime">Time</label>
-    <input type="time" id="endtime" name="time">
-    <br>
-    <button type="submit">save appointment</button>
+        <!-- Patient -->
+        <tr>
+            <td class="pr-4">
+                <label class="text-white font-bold">Patient</label>
+            </td>
+            <td>
+                <span id="patientname-area" class="text-white">
+                    <!-- will be filled by scripts -->
+                </span>
+            </td>
+        </tr>
+
+        <!-- Start Time Heading -->
+        <tr>
+            <td colspan="2" class="pt-4">
+                <h3 class="text-white font-bold text-lg">Start Time</h3>
+            </td>
+        </tr>
+
+        <!-- Start Date -->
+        <tr>
+            <td class="pr-4">
+                <label for="startdate" class="text-white font-bold">Date</label>
+            </td>
+            <td>
+                <input type="date"
+                       id="startdate"
+                       name="date"
+                       class="bg-gray-50 border border-gray-300 text-gray-900
+                              sm:text-sm rounded-lg focus:ring-blue-600
+                              focus:border-blue-600 block w-full p-2.5
+                              dark:bg-gray-700 dark:border-gray-600
+                              dark:placeholder-gray-400 dark:text-white
+                              dark:focus:ring-blue-500 dark:focus:border-blue-500
+                              outline-none">
+            </td>
+        </tr>
+
+        <!-- Start Time -->
+        <tr>
+            <td class="pr-4">
+                <label for="starttime" class="text-white font-bold">Time</label>
+            </td>
+            <td>
+                <input type="time"
+                       id="starttime"
+                       name="time"
+                       class="bg-gray-50 border border-gray-300 text-gray-900
+                              sm:text-sm rounded-lg focus:ring-blue-600
+                              focus:border-blue-600 block w-full p-2.5
+                              dark:bg-gray-700 dark:border-gray-600
+                              dark:placeholder-gray-400 dark:text-white
+                              dark:focus:ring-blue-500 dark:focus:border-blue-500
+                              outline-none">
+            </td>
+        </tr>
+
+        <!-- End Time Heading -->
+        <tr>
+            <td colspan="2" class="pt-4">
+                <h3 class="text-white font-bold text-lg">End Time</h3>
+            </td>
+        </tr>
+
+        <!-- End Date -->
+        <tr>
+            <td class="pr-4">
+                <label for="enddate" class="text-white font-bold">Date</label>
+            </td>
+            <td>
+                <input type="date"
+                       id="enddate"
+                       name="date"
+                       class="bg-gray-50 border border-gray-300 text-gray-900
+                              sm:text-sm rounded-lg focus:ring-blue-600
+                              focus:border-blue-600 block w-full p-2.5
+                              dark:bg-gray-700 dark:border-gray-600
+                              dark:placeholder-gray-400 dark:text-white
+                              dark:focus:ring-blue-500 dark:focus:border-blue-500
+                              outline-none">
+            </td>
+        </tr>
+
+        <!-- End Time -->
+        <tr>
+            <td class="pr-4">
+                <label for="endtime" class="text-white font-bold">Time</label>
+            </td>
+            <td>
+                <input type="time"
+                       id="endtime"
+                       name="time"
+                       class="bg-gray-50 border border-gray-300 text-gray-900
+                              sm:text-sm rounded-lg focus:ring-blue-600
+                              focus:border-blue-600 block w-full p-2.5
+                              dark:bg-gray-700 dark:border-gray-600
+                              dark:placeholder-gray-400 dark:text-white
+                              dark:focus:ring-blue-500 dark:focus:border-blue-500
+                              outline-none">
+            </td>
+        </tr>
+
+        <!-- Submit Button -->
+        <tr>
+            <td colspan="2" class="pt-4">
+                <button type="submit"
+                        class="inline-block text-white bg-blue-700 hover:bg-blue-800
+                               focus:ring-4 focus:ring-blue-300 font-medium
+                               rounded-lg text-sm px-5 py-2.5 me-2
+                               dark:bg-blue-600 dark:hover:bg-blue-700
+                               focus:outline-none dark:focus:ring-blue-800">
+                    Save Appointment
+                </button>
+            </td>
+        </tr>
+    </table>
 </form>
 
 <script>
